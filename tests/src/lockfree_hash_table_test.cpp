@@ -7,7 +7,6 @@
 
 int main() {
 
-    //Test 1:
     {
         int mapSize = 32;
         int threadCount = 1;
@@ -25,7 +24,6 @@ int main() {
         }
     }
 
-    //Test 2:
     {
         int mapSize = 32;
         int threadCount = 10;
@@ -55,7 +53,6 @@ int main() {
         }
     }
     
-    //Test 5:
     {
         int mapSize = 32;
         int threadCount = 10;
@@ -85,7 +82,6 @@ int main() {
         }
     }
 
-    //Test 6:
     {
         int mapSize = 32;
         int threadCount = 10;
@@ -116,7 +112,6 @@ int main() {
         }
     }
 
-    //Test 7:
     {
         int mapSize = 32;
         int threadCount = 10;
@@ -147,7 +142,6 @@ int main() {
         }
     }
     
-    //Test 8:
     {
         int mapSize = 32;
         int vectorSize = 16;
@@ -172,7 +166,6 @@ int main() {
         }
     }
 
-    //Test 9:
     {
         int mapSize = 32;
         int vectorSize = 16;
@@ -208,7 +201,6 @@ int main() {
         }
     }
 
-    //Test 10:
     {
         int mapSize = 32;
         int vectorSize = 16;

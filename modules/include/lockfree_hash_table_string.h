@@ -17,7 +17,8 @@ private:
 
   virtual int createHash(std::string key)
   {
-    return std::hash<std::string>{}(key);
+    //return std::hash<std::string>{}(key);
+   return std::stoi(key);
   }
 };
 #endif
