@@ -5,7 +5,7 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
-#include <lockfree_hash_table_templated.h>
+#include <lockfree_hash_table_string.h>
 
 void MapParameters(benchmark::internal::Benchmark* benchmark) {
     benchmark->ArgNames({"Size"});
@@ -15,13 +15,13 @@ void MapParameters(benchmark::internal::Benchmark* benchmark) {
     }
 }
 
-static void LockFreeMapTemplatedSearchBenchmark(benchmark::State &state)
+static void LockFreeMapStringSearchBenchmark(benchmark::State &state)
 {
     int mapSize = state.range(0);
     int threadCount = 1;
     int tid = threadCount - 1;
 
-    LockfreeHashTableTemplated<std::string, std::vector<int>> ht(2 * mapSize, threadCount);
+    LockfreeHashTableString<std::vector<int>> ht(2 * mapSize, threadCount);
     for (int i = 0; i < mapSize; i++) {
         ht.insert(std::to_string(i), std::vector<int>(mapSize, i), tid);
     }
@@ -132,7 +132,7 @@ static void UnorderedMapAtBenchmark(benchmark::State &state)
     }
 }
 
-BENCHMARK(LockFreeMapTemplatedSearchBenchmark)->Apply(MapParameters)->UseRealTime();
+BENCHMARK(LockFreeMapStringSearchBenchmark)->Apply(MapParameters)->UseRealTime();
 BENCHMARK(OrderedMapBracketsBenchmark)->Apply(MapParameters)->UseRealTime();
 BENCHMARK(OrderedMapAtBenchmark)->Apply(MapParameters)->UseRealTime();
 BENCHMARK(UnorderedMapBracketsBenchmark)->Apply(MapParameters)->UseRealTime();

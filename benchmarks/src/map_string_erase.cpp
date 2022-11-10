@@ -6,38 +6,12 @@
 #include <map>
 #include <unordered_map>
 #include <lockfree_hash_table_string.h>
-#include <lockfree_hash_table_templated.h>
 
 void MapParameters(benchmark::internal::Benchmark* benchmark) {
     benchmark->ArgNames({"Size"});
 
     for (int e = 2; e <= 64; e*=2) {
         benchmark->Args({e});
-    }
-}
-
-static void LockFreeMapTemplatedRemoveBenchmark(benchmark::State &state)
-{
-    int mapSize = state.range(0);
-    int threadCount = 1;
-    int tid = threadCount - 1;
-
-    for (auto _ : state) {
-        LockfreeHashTableTemplated<std::string, int> ht(2 * mapSize, threadCount);
-        for (int i = 0; i < mapSize; i++) {
-            ht.insert(std::to_string(i), i, tid);
-        }
-
-        auto start = std::chrono::high_resolution_clock::now();
-        for (int i = 0; i < mapSize; i++) {
-            ht.remove(std::to_string(i), tid);
-        }
-        auto end = std::chrono::high_resolution_clock::now();
-
-        auto elapsed_seconds = std::chrono::duration_cast<std::chrono::duration<double>>(end -
-                                                                                         start);
-
-        state.SetIterationTime(elapsed_seconds.count());
     }
 }
 
@@ -48,7 +22,7 @@ static void LockFreeMapRemoveBenchmark(benchmark::State &state)
     int tid = threadCount - 1;
 
     for (auto _ : state) {
-        LockfreeHashTableString ht(2 * mapSize, threadCount);
+        LockfreeHashTableString<int> ht(2 * mapSize, threadCount);
         for (int i = 0; i < mapSize; i++) {
             ht.insert(std::to_string(i), i, tid);
         }
@@ -112,7 +86,6 @@ static void UnorderedMapEraseBenchmark(benchmark::State &state)
     }
 }
 
-BENCHMARK(LockFreeMapTemplatedRemoveBenchmark)->Apply(MapParameters)->UseRealTime();
 BENCHMARK(LockFreeMapRemoveBenchmark)->Apply(MapParameters)->UseRealTime();
 BENCHMARK(OrderedMapEraseBenchmark)->Apply(MapParameters)->UseRealTime();
 BENCHMARK(UnorderedMapEraseBenchmark)->Apply(MapParameters)->UseRealTime();

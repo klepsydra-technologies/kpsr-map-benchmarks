@@ -6,7 +6,6 @@
 #include <map>
 #include <unordered_map>
 #include <lockfree_hash_table_string.h>
-#include <lockfree_hash_table_templated.h>
 
 void MapParameters(benchmark::internal::Benchmark* benchmark) {
     benchmark->ArgNames({"Size"});
@@ -16,38 +15,13 @@ void MapParameters(benchmark::internal::Benchmark* benchmark) {
     }
 }
 
-static void LockFreeMapTemplatedSearchBenchmark(benchmark::State &state)
-{
-    int mapSize = state.range(0);
-    int threadCount = 1;
-    int tid = threadCount - 1;
-
-    LockfreeHashTableTemplated<std::string, int> ht(2 * mapSize, threadCount);
-    for (int i = 0; i < mapSize; i++) {
-        ht.insert(std::to_string(i), i, tid);
-    }
-
-    for (auto _ : state) {
-        auto start = std::chrono::high_resolution_clock::now();
-        for (int i = 0; i < mapSize; i++) {
-            std::pair<int, bool> value = ht.search(std::to_string(i), tid);
-        }
-        auto end = std::chrono::high_resolution_clock::now();
-
-        auto elapsed_seconds = std::chrono::duration_cast<std::chrono::duration<double>>(end -
-                                                                                         start);
-
-        state.SetIterationTime(elapsed_seconds.count());
-    }
-}
-
 static void LockFreeMapSearchBenchmark(benchmark::State &state)
 {
     int mapSize = state.range(0);
     int threadCount = 1;
     int tid = threadCount - 1;
 
-    LockfreeHashTableString ht(2 * mapSize, threadCount);
+    LockfreeHashTableString<int> ht(2 * mapSize, threadCount);
     for (int i = 0; i < mapSize; i++) {
         ht.insert(std::to_string(i), i, tid);
     }
@@ -153,7 +127,6 @@ static void UnorderedMapAtBenchmark(benchmark::State &state)
     }
 }
 
-BENCHMARK(LockFreeMapTemplatedSearchBenchmark)->Apply(MapParameters)->UseRealTime();
 BENCHMARK(LockFreeMapSearchBenchmark)->Apply(MapParameters)->UseRealTime();
 BENCHMARK(OrderedMapBracketsBenchmark)->Apply(MapParameters)->UseRealTime();
 BENCHMARK(OrderedMapAtBenchmark)->Apply(MapParameters)->UseRealTime();
