@@ -101,7 +101,7 @@ public:
     return;
   }
 
-V& search(K key, int tid, bool& found)
+  V& search(K key, int tid, bool& found)
   {
     int hashKey = createHash(key);
     int h1 = hash1(hashKey);
@@ -279,7 +279,7 @@ private:
     return (ts1x >= ts1 + 2) && (ts2x >= ts2 + 2) && (ts2x >= ts1 + 3);
   }
 
-  Find_result_templated find(K key, Count_ptr_templated<K,V> &ptr1, Count_ptr_templated<K,V> &ptr2, int tid)
+  Find_result_templated find(K &key, Count_ptr_templated<K,V> &ptr1, Count_ptr_templated<K,V> &ptr2, int tid)
   {
     int hashKey = createHash(key);
     int h1 = hash1(hashKey);
