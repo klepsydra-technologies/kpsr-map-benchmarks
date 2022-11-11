@@ -15,7 +15,7 @@ public:
   
 private:
 
-  virtual int createHash(unsigned int key)
+  virtual int createHash(unsigned int &key)
   {
     return key;
   }

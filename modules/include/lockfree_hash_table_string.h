@@ -15,10 +15,13 @@ public:
   
 private:
 
-  virtual int createHash(std::string key)
+  virtual int createHash(std::string &key)
   {
-    //return std::hash<std::string>{}(key);
-   return std::stoi(key);
+    return std::hash<std::string>{}(key);
+    //return std::stoi(key);
+    //size_t precision = 2;
+    //return (*(size_t*)key.data())>> precision;
+    //return 1;
   }
 };
 #endif

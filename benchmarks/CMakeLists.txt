@@ -14,6 +14,8 @@ FILE(GLOB_RECURSE ${PROJECT_NAME}_SRC
 
 find_package(benchmark REQUIRED)
 
+#MAP_STRING_INT
+
 add_executable(${PROJECT_NAME}_string_get ${${PROJECT_NAME}_HEADERS} ${${PROJECT_NAME}_SRC} src/map_string_get.cpp)
 
 TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME}_string_get
@@ -48,6 +50,8 @@ TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME}_uint_get
   ${CMAKE_CURRENT_SOURCE_DIR}/../modules/include 
   )
 
+#MAP_UINT_INT
+
 target_link_libraries(${PROJECT_NAME}_uint_get benchmark::benchmark_main)
 
 add_executable(${PROJECT_NAME}_uint_put ${${PROJECT_NAME}_HEADERS} ${${PROJECT_NAME}_SRC} src/map_uint_put.cpp)
@@ -69,6 +73,8 @@ TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME}_uint_erase
 target_link_libraries(${PROJECT_NAME}_uint_erase benchmark::benchmark_main)
 
 add_executable(${PROJECT_NAME}_string_vector_put ${${PROJECT_NAME}_HEADERS} ${${PROJECT_NAME}_SRC} src/map_string_vector_put.cpp)
+
+#MAP_STRING_VECTOR
 
 TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME}_string_vector_put
   PRIVATE
@@ -94,3 +100,32 @@ TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME}_string_vector_erase
   )
 
 target_link_libraries(${PROJECT_NAME}_string_vector_erase benchmark::benchmark_main)
+
+#MAP_UINT_VECTOR
+
+add_executable(${PROJECT_NAME}_uint_vector_put ${${PROJECT_NAME}_HEADERS} ${${PROJECT_NAME}_SRC} src/map_uint_vector_put.cpp)
+
+TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME}_uint_vector_put
+  PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/../modules/include 
+  )
+
+target_link_libraries(${PROJECT_NAME}_uint_vector_put benchmark::benchmark_main)
+
+add_executable(${PROJECT_NAME}_uint_vector_get ${${PROJECT_NAME}_HEADERS} ${${PROJECT_NAME}_SRC} src/map_uint_vector_get.cpp)
+
+TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME}_uint_vector_get
+  PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/../modules/include 
+  )
+
+target_link_libraries(${PROJECT_NAME}_uint_vector_get benchmark::benchmark_main)
+
+add_executable(${PROJECT_NAME}_uint_vector_erase ${${PROJECT_NAME}_HEADERS} ${${PROJECT_NAME}_SRC} src/map_uint_vector_erase.cpp)
+
+TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME}_uint_vector_erase
+  PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/../modules/include 
+  )
+
+target_link_libraries(${PROJECT_NAME}_uint_vector_erase benchmark::benchmark_main)

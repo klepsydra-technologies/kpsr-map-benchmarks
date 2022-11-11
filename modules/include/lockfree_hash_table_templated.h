@@ -241,7 +241,7 @@ private:
   std::vector<int>                                       rcount;
   std::vector<std::array<Hash_entry_templated<K,V>*, 2>>         hp_rec;
 
-  virtual int createHash(K key)
+  virtual int createHash(K &key)
   {
     std::cout << "general specialization" << std::endl;
     return std::hash<K>{}(key);
