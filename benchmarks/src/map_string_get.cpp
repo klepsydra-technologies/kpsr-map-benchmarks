@@ -14,7 +14,6 @@ void MapParameters(benchmark::internal::Benchmark* benchmark) {
         benchmark->Args({e});
     }
 }
-
 static void LockFreeMapSearchBenchmark(benchmark::State &state)
 {
     int mapSize = state.range(0);
@@ -25,11 +24,12 @@ static void LockFreeMapSearchBenchmark(benchmark::State &state)
     for (int i = 0; i < mapSize; i++) {
         ht.insert(std::to_string(i), i, tid);
     }
+    bool found = false;
 
     for (auto _ : state) {
         auto start = std::chrono::high_resolution_clock::now();
         for (int i = 0; i < mapSize; i++) {
-            std::pair<int, bool> value = ht.search(std::to_string(i), tid);
+            int value = ht.search(std::to_string(i), tid, found);
         }
         auto end = std::chrono::high_resolution_clock::now();
 

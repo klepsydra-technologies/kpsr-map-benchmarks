@@ -6,7 +6,7 @@
 #include <iostream>
 
 int main() {
-
+/*
     {
         int mapSize = 32;
         int threadCount = 1;
@@ -165,23 +165,26 @@ int main() {
             }
         }
     }
-
+*/
     {
+        std::cout << "Test 1" << std::endl;
         int mapSize = 32;
         int vectorSize = 16;
         int threadCount = 10;
 
         LockfreeHashTableString<std::vector<int>> ht(2 * mapSize, threadCount);
+        bool found = false;
         for (int tid = 0; tid < threadCount; tid++) {
             for (int i = 0; i < mapSize; i++) {
                 std::vector<int> vectorToStore(vectorSize, i + 10 + mapSize * tid);
                 ht.insert(std::to_string(i), vectorToStore, tid);
                 
-                std::pair<std::vector<int>, bool> value = ht.search(std::to_string(i), tid);
-                assert((value.first).size() == vectorSize);
-                assert(value.second == true);
+                found = false;
+                std::vector<int> value = ht.search(std::to_string(i), tid, found);
+                assert(value.size() == vectorSize);
+                assert(found == true);
                 for (size_t j = 0; j < vectorSize; j++) {
-                    assert(vectorToStore[j] == value.first[j]);
+                    assert(vectorToStore[j] == value[j]);
                 }
             }
         }
@@ -189,38 +192,40 @@ int main() {
         int lastTid = threadCount - 1;
         for (int tid = 0; tid < threadCount; tid++) {
             for (int i = 0; i < mapSize; i++) {
-                std::pair<std::vector<int>, bool> value = ht.search(std::to_string(i), tid);
-                
+                found = false;
+                std::vector<int> value = ht.search(std::to_string(i), tid, found);
                 std::vector<int> expectedVector(vectorSize, i + 10 + mapSize * lastTid);
-                assert((value.first).size() == vectorSize);
-                assert(value.second == true);
+                assert(value.size() == vectorSize);
+                assert(found == true);
                 for (size_t j = 0; j < vectorSize; j++) {
-                    assert(expectedVector[j] == value.first[j]);
+                    assert(expectedVector[j] == value[j]);
                 }
             }
         }
     }
 
     {
+        std::cout << "Test 2" << std::endl;
         int mapSize = 32;
         int vectorSize = 16;
         int threadCount = 1;
         int tid = threadCount - 1;
     
         LockfreeHashTableUint<std::vector<int>> ht(2 * mapSize, threadCount);
+        bool found = false;
         for (unsigned int i = 0; i < mapSize; i++) {
             std::vector<int> vectorToStore(vectorSize, i + 10);
             ht.insert(i, vectorToStore, tid);
         }
 
         for (int i = 0; i < mapSize; i++) {
-            std::pair<std::vector<int>, bool> value = ht.search(i, tid);
-
+            found = false;
+            std::vector<int> value = ht.search(i, tid, found);
             std::vector<int> expectedVector(vectorSize, i+10);
-            assert((value.first).size() == vectorSize);
-            assert(value.second == true);
+            assert(value.size() == vectorSize);
+            assert(found == true);
             for (size_t j = 0; j < vectorSize; j++) {
-                assert(expectedVector[j] == value.first[j]);
+                assert(expectedVector[j] == value[j]);
             }
         }
     }

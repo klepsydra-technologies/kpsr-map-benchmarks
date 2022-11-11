@@ -100,7 +100,8 @@ public:
   void rehash_templated() {
     return;
   }
-  std::pair<V, bool> search(K key, int tid)
+
+V& search(K key, int tid, bool& found)
   {
     int hashKey = createHash(key);
     int h1 = hash1(hashKey);
@@ -117,8 +118,10 @@ public:
 
       int ts1 = get_counter<K,V>(ptr1);
 
-      if (e1 && e1->key == key)
-        return std::make_pair(e1->val, true);
+      if (e1 && e1->key == key) {
+        found = true;
+        return e1->val;
+      }
 
       Count_ptr_templated<K,V> ptr2 = table[1][h2];
       Hash_entry_templated<K,V> *e2 = get_pointer<K,V>(ptr2);
@@ -129,22 +132,23 @@ public:
 
       int ts2 = get_counter<K,V>(ptr2);
 
-      if (e2 && e2->key == key)
-        return std::make_pair(e2->val, true);
-
+      if (e2 && e2->key == key) {
+        found = true;
+        return e2->val;
+      }
       int ts1x = get_counter<K,V>(table[0][h1]);
       int ts2x = get_counter<K,V>(table[1][h2]);
 
       if (check_counter(ts1, ts2, ts1x, ts2x)) {
         continue;
       } else {
-        V defaultValue;
-        return std::make_pair(defaultValue, false);
+        found = false;
+        return _defaultValue;
       }
     }
 
-    V defaultValue;
-    return std::make_pair(defaultValue, false);
+    found = false;
+    return _defaultValue;
   }
 
   void insert(K key, V val, int tid)
@@ -233,7 +237,7 @@ public:
   }
 
 private:
-  Count_ptr_templated<K,V> *table[2];  
+  Count_ptr_templated<K,V> *table[2];
   int size1;
   int size2;
 
@@ -241,6 +245,8 @@ private:
   std::vector<int>                                       rcount;
   std::vector<std::array<Hash_entry_templated<K,V>*, 2>>         hp_rec;
 
+  V _defaultValue;
+  
   virtual int createHash(K &key)
   {
     std::cout << "general specialization" << std::endl;

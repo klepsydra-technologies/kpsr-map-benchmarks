@@ -25,11 +25,13 @@ static void LockFreeMapUintSearchBenchmark(benchmark::State &state)
     for (unsigned int i = 0; i < mapSize; i++) {
         ht.insert(i, std::vector<int>(mapSize, i), tid);
     }
+    std::vector<std::vector<int>> vectorValues(mapSize);
+    bool found = false;
 
     for (auto _ : state) {
         auto start = std::chrono::high_resolution_clock::now();
         for (unsigned int i = 0; i < mapSize; i++) {
-            std::pair<std::vector<int>, bool> value = ht.search(i, tid);
+            vectorValues[i] = ht.search(i, tid, found);
         }
         auto end = std::chrono::high_resolution_clock::now();
 
