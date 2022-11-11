@@ -20,17 +20,19 @@ static void LockFreeMapUintSearchBenchmark(benchmark::State &state)
     int mapSize = state.range(0);
     int threadCount = 1;
     int tid = threadCount - 1;
+    std::vector<unsigned int> keys(mapSize);
 
     LockfreeHashTableUint<int> ht(2 * mapSize, threadCount);
     for (unsigned int i = 0; i < mapSize; i++) {
-        ht.insert(i, i, tid);
+        keys[i] = i;
+        ht.insert(keys[i], i, tid);
     }
     bool found = false;
 
     for (auto _ : state) {
         auto start = std::chrono::high_resolution_clock::now();
         for (unsigned int i = 0; i < mapSize; i++) {
-            int value = ht.search(i, tid, found);
+            int value = ht.search(keys[i], tid, found);
         }
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -45,14 +47,16 @@ static void OrderedMapBracketsBenchmark(benchmark::State &state)
 {
     int mapSize = state.range(0);
     std::map<unsigned int, int> orderedMap;
+    std::vector<unsigned int> keys(mapSize);
     for (int i = 0; i < mapSize; i++) {
-        orderedMap[i] = i; 
+        keys[i] = i;
+        orderedMap[keys[i]] = i; 
     }
 
     for (auto _ : state) {
         auto start = std::chrono::high_resolution_clock::now();
         for (unsigned int i = 0; i < mapSize; i++) {
-            int value = orderedMap[i]; 
+            int value = orderedMap[keys[i]]; 
         }
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -67,14 +71,16 @@ static void OrderedMapAtBenchmark(benchmark::State &state)
 {
     int mapSize = state.range(0);
     std::map<unsigned int, int> orderedMap;
+    std::vector<unsigned int> keys(mapSize);
     for (unsigned int i = 0; i < mapSize; i++) {
-        orderedMap[i] = i; 
+        keys[i] = i;
+        orderedMap[keys[i]] = i; 
     }
 
     for (auto _ : state) {
         auto start = std::chrono::high_resolution_clock::now();
         for (unsigned int i = 0; i < mapSize; i++) {
-            int value = orderedMap.at(i);
+            int value = orderedMap.at(keys[i]);
         }
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -89,14 +95,16 @@ static void UnorderedMapBracketsBenchmark(benchmark::State &state)
 {
     int mapSize = state.range(0);
     std::unordered_map<unsigned int, int> unorderedMap;
+    std::vector<unsigned int> keys(mapSize);
     for (unsigned int i = 0; i < mapSize; i++) {
-        unorderedMap[i] = i; 
+        keys[i] = i;
+        unorderedMap[keys[i]] = i; 
     }
 
     for (auto _ : state) {
         auto start = std::chrono::high_resolution_clock::now();
         for (unsigned int i = 0; i < mapSize; i++) {
-            int value = unorderedMap[i]; 
+            int value = unorderedMap[keys[i]]; 
         }
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -111,14 +119,16 @@ static void UnorderedMapAtBenchmark(benchmark::State &state)
 {
     int mapSize = state.range(0);
     std::unordered_map<unsigned int, int> unorderedMap;
+    std::vector<unsigned int> keys(mapSize);
     for (unsigned int i = 0; i < mapSize; i++) {
+        keys[i] = i;
         unorderedMap[i] = i; 
     }
 
     for (auto _ : state) {
         auto start = std::chrono::high_resolution_clock::now();
         for (unsigned int i = 0; i < mapSize; i++) {
-            int value = unorderedMap.at(i); 
+            int value = unorderedMap.at(keys[i]); 
         }
         auto end = std::chrono::high_resolution_clock::now();
 

@@ -20,13 +20,17 @@ static void LockFreeMapUintInsertBenchmark(benchmark::State &state)
     unsigned int mapSize = state.range(0);
     int threadCount = 1;
     int tid = threadCount - 1;
+    std::vector<unsigned int> keys(mapSize);
+    for (unsigned int i = 0; i < mapSize; i++) {
+        keys[i] = i;
+    }
 
     for (auto _ : state) {
         LockfreeHashTableUint<std::vector<int>> ht(2 * mapSize, threadCount);
 
         auto start = std::chrono::high_resolution_clock::now();
         for (unsigned int i = 0; i < mapSize; i++) {
-            ht.insert(i, std::vector<int>(mapSize, i), tid);
+            ht.insert(keys[i], std::vector<int>(mapSize, i), tid);
         }
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -40,13 +44,17 @@ static void LockFreeMapUintInsertBenchmark(benchmark::State &state)
 static void OrderedMapBracketsBenchmark(benchmark::State &state)
 {
     unsigned int mapSize = state.range(0);
+    std::vector<unsigned int> keys(mapSize);
+    for (unsigned int i = 0; i < mapSize; i++) {
+        keys[i] = i;
+    }
 
     for (auto _ : state) {
         std::map<unsigned int, std::vector<int>> orderedMap;
 
         auto start = std::chrono::high_resolution_clock::now();
         for (unsigned int i = 0; i < mapSize; i++) {
-            orderedMap[i] = std::vector<int>(mapSize, i); 
+            orderedMap[keys[i]] = std::vector<int>(mapSize, i); 
         }
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -60,13 +68,17 @@ static void OrderedMapBracketsBenchmark(benchmark::State &state)
 static void OrderedMapInsertBenchmark(benchmark::State &state)
 {
     unsigned int mapSize = state.range(0);
-    
+    std::vector<unsigned int> keys(mapSize);
+    for (unsigned int i = 0; i < mapSize; i++) {
+        keys[i] = i;
+    }
+
     for (auto _ : state) {
         std::map<unsigned int, std::vector<int>> orderedMap;
         
         auto start = std::chrono::high_resolution_clock::now();
         for (unsigned int i = 0; i < mapSize; i++) {
-            orderedMap.insert({i, std::vector<int>(mapSize, i)}); 
+            orderedMap.insert({keys[i], std::vector<int>(mapSize, i)}); 
         }
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -80,13 +92,17 @@ static void OrderedMapInsertBenchmark(benchmark::State &state)
 static void UnorderedMapBracketsBenchmark(benchmark::State &state)
 {
     unsigned int mapSize = state.range(0);
-    
+    std::vector<unsigned int> keys(mapSize);
+    for (unsigned int i = 0; i < mapSize; i++) {
+        keys[i] = i;
+    }
+
     for (auto _ : state) {
         std::unordered_map<unsigned int, std::vector<int>> unorderedMap;
 
         auto start = std::chrono::high_resolution_clock::now();
         for (unsigned int i = 0; i < mapSize; i++) {
-            unorderedMap[i] = std::vector<int>(mapSize, i); 
+            unorderedMap[keys[i]] = std::vector<int>(mapSize, i); 
         }
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -100,13 +116,17 @@ static void UnorderedMapBracketsBenchmark(benchmark::State &state)
 static void UnorderedMapInsertBenchmark(benchmark::State &state)
 {
     unsigned int mapSize = state.range(0);
-    
+    std::vector<unsigned int> keys(mapSize);
+    for (unsigned int i = 0; i < mapSize; i++) {
+        keys[i] = i;
+    }
+
     for (auto _ : state) {
         std::unordered_map<unsigned int, std::vector<int>> unorderedMap;
 
         auto start = std::chrono::high_resolution_clock::now();
         for (unsigned int i = 0; i < mapSize; i++) {
-            unorderedMap.insert({i, std::vector<int>(mapSize, i)}); 
+            unorderedMap.insert({keys[i], std::vector<int>(mapSize, i)}); 
         }
         auto end = std::chrono::high_resolution_clock::now();
 

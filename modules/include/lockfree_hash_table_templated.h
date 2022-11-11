@@ -101,7 +101,7 @@ public:
     return;
   }
 
-  V& search(K key, int tid, bool& found)
+  V& search(K& key, int tid, bool& found)
   {
     int hashKey = createHash(key);
     int h1 = hash1(hashKey);
@@ -151,7 +151,7 @@ public:
     return _defaultValue;
   }
 
-  void insert(K key, V val, int tid)
+  void insert(K& key, V val, int tid)
   {
     Count_ptr_templated<K,V> ptr1, ptr2;
 
@@ -203,7 +203,7 @@ public:
     }
   }
 
-  void remove(K key, int tid)
+  void remove(K& key, int tid)
   {
     int hashKey = createHash(key);
     int h1 = hash1(hashKey);

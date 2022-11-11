@@ -20,16 +20,18 @@ static void LockFreeMapUintRemoveBenchmark(benchmark::State &state)
     unsigned int mapSize = state.range(0);
     int threadCount = 1;
     int tid = threadCount - 1;
+    std::vector<unsigned int> keys(mapSize);
 
     for (auto _ : state) {
         LockfreeHashTableUint<std::vector<int>> ht(2 * mapSize, threadCount);
         for (unsigned int i = 0; i < mapSize; i++) {
-            ht.insert(i, std::vector<int>(mapSize, i), tid);
+            keys[i] = i;
+            ht.insert(keys[i], std::vector<int>(mapSize, i), tid);
         }
 
         auto start = std::chrono::high_resolution_clock::now();
         for (unsigned int i = 0; i < mapSize; i++) {
-            ht.remove(i, tid);
+            ht.remove(keys[i], tid);
         }
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -43,16 +45,18 @@ static void LockFreeMapUintRemoveBenchmark(benchmark::State &state)
 static void OrderedMapEraseBenchmark(benchmark::State &state)
 {
     unsigned int mapSize = state.range(0);
+    std::vector<unsigned int> keys(mapSize);
 
     for (auto _ : state) {
         std::map<unsigned int, std::vector<int>> orderedMap;
         for (unsigned int i = 0; i < mapSize; i++) {
-            orderedMap[i] = std::vector<int>(mapSize, i); 
+            keys[i] = i;
+            orderedMap[keys[i]] = std::vector<int>(mapSize, i); 
         }
 
         auto start = std::chrono::high_resolution_clock::now();
         for (unsigned int i = 0; i < mapSize; i++) {
-            orderedMap.erase(i);
+            orderedMap.erase(keys[i]);
         }
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -66,16 +70,18 @@ static void OrderedMapEraseBenchmark(benchmark::State &state)
 static void UnorderedMapEraseBenchmark(benchmark::State &state)
 {
     unsigned int mapSize = state.range(0);
+    std::vector<unsigned int> keys(mapSize);
 
     for (auto _ : state) {
         std::unordered_map<unsigned int, std::vector<int>> unorderedMap;
         for (unsigned int i = 0; i < mapSize; i++) {
-            unorderedMap[i] = std::vector<int>(mapSize, i); 
+            keys[i] = i;
+            unorderedMap[keys[i]] = std::vector<int>(mapSize, i); 
         }
 
         auto start = std::chrono::high_resolution_clock::now();
         for (unsigned int i = 0; i < mapSize; i++) {
-            unorderedMap.erase(i);
+            unorderedMap.erase(keys[i]);
         }
         auto end = std::chrono::high_resolution_clock::now();
 

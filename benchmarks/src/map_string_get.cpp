@@ -19,17 +19,19 @@ static void LockFreeMapSearchBenchmark(benchmark::State &state)
     int mapSize = state.range(0);
     int threadCount = 1;
     int tid = threadCount - 1;
+    std::vector<std::string> keys(mapSize);
 
     LockfreeHashTableString<int> ht(2 * mapSize, threadCount);
     for (int i = 0; i < mapSize; i++) {
-        ht.insert(std::to_string(i), i, tid);
+        keys[i] = std::to_string(i);
+        ht.insert(keys[i], i, tid);
     }
     bool found = false;
 
     for (auto _ : state) {
         auto start = std::chrono::high_resolution_clock::now();
         for (int i = 0; i < mapSize; i++) {
-            int value = ht.search(std::to_string(i), tid, found);
+            int value = ht.search(keys[i], tid, found);
         }
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -42,16 +44,18 @@ static void LockFreeMapSearchBenchmark(benchmark::State &state)
 
 static void OrderedMapBracketsBenchmark(benchmark::State &state)
 {
-    size_t mapSize = state.range(0);
+    int mapSize = state.range(0);
+    std::vector<std::string> keys(mapSize);
     std::map<std::string, int> orderedMap;
-    for (size_t i = 0; i < mapSize; i++) {
-        orderedMap[std::to_string(i)] = i; 
+    for (int i = 0; i < mapSize; i++) {
+        keys[i] = std::to_string(i);
+        orderedMap[keys[i]] = i; 
     }
 
     for (auto _ : state) {
         auto start = std::chrono::high_resolution_clock::now();
-        for (size_t i = 0; i < mapSize; i++) {
-            int value = orderedMap[std::to_string(i)]; 
+        for (int i = 0; i < mapSize; i++) {
+            int value = orderedMap[keys[i]]; 
         }
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -64,15 +68,17 @@ static void OrderedMapBracketsBenchmark(benchmark::State &state)
 
 static void OrderedMapAtBenchmark(benchmark::State &state)
 {
-    size_t mapSize = state.range(0);
+    int mapSize = state.range(0);
+    std::vector<std::string> keys(mapSize);
     std::map<std::string, int> orderedMap;
-    for (size_t i = 0; i < mapSize; i++) {
-        orderedMap[std::to_string(i)] = i; 
+    for (int i = 0; i < mapSize; i++) {
+        keys[i] = std::to_string(i);
+        orderedMap[keys[i]] = i; 
     }
     for (auto _ : state) {
         auto start = std::chrono::high_resolution_clock::now();
-        for (size_t i = 0; i < mapSize; i++) {
-            int value = orderedMap.at(std::to_string(i));
+        for (int i = 0; i < mapSize; i++) {
+            int value = orderedMap.at(keys[i]);
         }
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -85,16 +91,18 @@ static void OrderedMapAtBenchmark(benchmark::State &state)
 
 static void UnorderedMapBracketsBenchmark(benchmark::State &state)
 {
-    size_t mapSize = state.range(0);
+    int mapSize = state.range(0);
+    std::vector<std::string> keys(mapSize);
     std::unordered_map<std::string, int> unorderedMap;
-    for (size_t i = 0; i < mapSize; i++) {
-        unorderedMap[std::to_string(i)] = i; 
+    for (int i = 0; i < mapSize; i++) {
+        keys[i] = std::to_string(i);
+        unorderedMap[keys[i]] = i; 
     }
 
     for (auto _ : state) {
         auto start = std::chrono::high_resolution_clock::now();
-        for (size_t i = 0; i < mapSize; i++) {
-            int value = unorderedMap[std::to_string(i)]; 
+        for (int i = 0; i < mapSize; i++) {
+            int value = unorderedMap[keys[i]]; 
         }
         auto end = std::chrono::high_resolution_clock::now();
 
@@ -107,16 +115,18 @@ static void UnorderedMapBracketsBenchmark(benchmark::State &state)
 
 static void UnorderedMapAtBenchmark(benchmark::State &state)
 {
-    size_t mapSize = state.range(0);
+    int mapSize = state.range(0);
+    std::vector<std::string> keys(mapSize);
     std::unordered_map<std::string, int> unorderedMap;
-    for (size_t i = 0; i < mapSize; i++) {
-        unorderedMap[std::to_string(i)] = i; 
+    for (int i = 0; i < mapSize; i++) {
+        keys[i] = std::to_string(i);
+        unorderedMap[keys[i]] = i; 
     }
 
     for (auto _ : state) {
         auto start = std::chrono::high_resolution_clock::now();
-        for (size_t i = 0; i < mapSize; i++) {
-            int value = unorderedMap.at(std::to_string(i)); 
+        for (int i = 0; i < mapSize; i++) {
+            int value = unorderedMap.at(keys[i]); 
         }
         auto end = std::chrono::high_resolution_clock::now();
 
