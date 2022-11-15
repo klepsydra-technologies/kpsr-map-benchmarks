@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <vector>
 #include <array>
+#include <functional>
 
 #define MAX_BUF 256
 #define THRESHOLD   50
@@ -61,7 +62,9 @@ public:
   {
     size1 = capacity / 2;
     size2 = capacity - size1;
-
+    
+    vectorOfKeys = std::vector<std::vector<K>>(thread_count);
+  
     table[0] = new Count_ptr_templated<K,V>[size1]();
     table[1] = new Count_ptr_templated<K,V>[size2]();
 
@@ -170,11 +173,13 @@ public:
 
       if (result == FIRST_templated) {
         get_pointer<K,V>(ptr1)->val = val; 
+        vectorOfKeys[tid].push_back(key);
         return;
       }
 
       if (result == SECOND_templated) {
         get_pointer<K,V>(ptr2)->val = val;
+        vectorOfKeys[tid].push_back(key);
         return;
       }
 
@@ -183,6 +188,7 @@ public:
               &table[0][h1], ptr1, make_pointer<K,V>(new_node, get_counter<K,V>(ptr1)))) {
           continue; 
         }
+        vectorOfKeys[tid].push_back(key);
         return;
       }
 
@@ -191,6 +197,7 @@ public:
               &table[1][h2], ptr2, make_pointer<K,V>(new_node, get_counter<K,V>(ptr2)))) {
           continue; 
         }
+        vectorOfKeys[tid].push_back(key);
         return;
       }
 
@@ -198,6 +205,7 @@ public:
         continue;
       } else {
         rehash_templated();
+        vectorOfKeys[0].push_back(key);
         return;
       }
     }
@@ -222,6 +230,7 @@ public:
         if (__sync_bool_compare_and_swap(
               &table[0][h1], e1, make_pointer<K,V>(nullptr, get_counter<K,V>(e1)))) {
           retire_node(get_pointer<K,V>(e1), tid);
+          removeKeyFromVector(key, tid);
           return;
         }
       } else if (ret == SECOND_templated) {
@@ -230,16 +239,32 @@ public:
         if (__sync_bool_compare_and_swap(
               &table[1][h2], e2, make_pointer<K,V>(nullptr, get_counter<K,V>(e2)))) {
           retire_node(get_pointer<K,V>(e2), tid);
+          removeKeyFromVector(key, tid);
           return;
         }
       }
     } 
   }
 
+void removeIf(int tid, std::function<bool(const V &value)> callback) {
+  std::vector<K> keys = vectorOfKeys[tid];
+  bool found = false;
+  for (auto& k : keys) {
+    V& val = search(k, tid, found);
+    if (found) {
+      if (callback(val)) {
+        remove(k, tid);
+      }
+    }
+  }
+}
+
 private:
   Count_ptr_templated<K,V> *table[2];
   int size1;
   int size2;
+  
+  std::vector<std::vector<K>> vectorOfKeys;
 
   std::vector<std::array<Hash_entry_templated<K,V>*, MAX_BUF>>   rlist;
   std::vector<int>                                       rcount;
@@ -247,6 +272,18 @@ private:
 
   V _defaultValue;
   
+  void removeKeyFromVector(K &key, int tid) {
+    auto elementToBeRemoved = std::find_if(
+      vectorOfKeys[tid].begin(),
+      vectorOfKeys[tid].end(),
+      [&key](K currentKey) {
+        return currentKey == key;
+      });
+    if (elementToBeRemoved != vectorOfKeys[tid].end()) {
+      vectorOfKeys[tid].erase(elementToBeRemoved);
+    }
+  }
+
   virtual int createHash(K &key)
   {
     std::cout << "general specialization" << std::endl;

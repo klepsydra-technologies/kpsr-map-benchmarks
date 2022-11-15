@@ -251,6 +251,43 @@ int main() {
             }
         }
     }
+    
+    {
+        int mapSize = 32;
+        int vectorSize = 16;
+        int threadCount = 1;
+        int tid = threadCount - 1;
+    
+        LockfreeHashTableString<int> ht(2 * mapSize, threadCount);
+        std::vector<std::string> keys(mapSize);
+        bool found = false;
+        for (int i = 0; i < mapSize; i++) {
+            int valueToStore = i + 10;
+            keys[i] = std::to_string(i);
+            ht.insert(keys[i], valueToStore, tid);
+        }
+
+        for (int i = 0; i < mapSize; i++) {
+            found = false;
+            int value = ht.search(keys[i], tid, found);
+
+            int expectedValue = i+10;
+            assert(found == true);
+            assert(expectedValue == value);
+        }
+
+        int listenerId = 10;
+        std::function<bool(const int)> callback = [listenerId](const int &value) {
+            if (listenerId == value) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+        for (int i = 0; i < mapSize; i++) {
+            ht.removeIf(tid, callback);
+        }
+    }
 
     std::cout << "Tests Ok" << std::endl;
 }
