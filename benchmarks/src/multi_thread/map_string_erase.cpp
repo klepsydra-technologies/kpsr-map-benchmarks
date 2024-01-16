@@ -8,6 +8,7 @@
 #include <lockfree_hash_table_string.h>
 #include <map_parameters/map_parameters.h>
 #include <mutex>
+#include <thread_safe_map.h>
 
 
 BENCHMARK_TEMPLATE_DEFINE_F(MapPerformanceTest, LockFreeMapRemoveBenchmark, std::string, int)(benchmark::State &state)
@@ -21,6 +22,7 @@ BENCHMARK_TEMPLATE_DEFINE_F(MapPerformanceTest, LockFreeMapRemoveBenchmark, std:
         state.SetIterationTime(measureOperationMultithreaded(remove));
     }
 }
+
 BENCHMARK_TEMPLATE_DEFINE_F(MapPerformanceTest, OrderedMapEraseBenchmark, std::string, int) (benchmark::State &state)
 {
     std::mutex mutex;
@@ -51,6 +53,20 @@ BENCHMARK_TEMPLATE_DEFINE_F(MapPerformanceTest, UnorderedMapEraseBenchmark, std:
     }
 }
 
+BENCHMARK_TEMPLATE_DEFINE_F(MapPerformanceTest, ThreadSafeMapRemoveBenchmark, std::string, int)(benchmark::State &state)
+{
+    int tid = threadCount - 1;
+    for (auto _ : state) {
+        ThreadSafeMap<std::string, int> threadSafeMap;
+        auto insert = [&threadSafeMap, tid] (std::string key, int value) { threadSafeMap.insert(key, value);};
+        initializeCollection(insert, keyStringCreator);
+        auto remove = [&threadSafeMap] (std::string key) {threadSafeMap.erase(key);};
+        state.SetIterationTime(measureOperationMultithreaded(remove));
+    }
+}
+
+
 BENCHMARK_REGISTER_F(MapPerformanceTest,LockFreeMapRemoveBenchmark)->Apply(MapParametersMultithreaded)->UseRealTime();
 BENCHMARK_REGISTER_F(MapPerformanceTest,OrderedMapEraseBenchmark)->Apply(MapParametersMultithreaded)->UseRealTime();
 BENCHMARK_REGISTER_F(MapPerformanceTest,UnorderedMapEraseBenchmark)->Apply(MapParametersMultithreaded)->UseRealTime();
+BENCHMARK_REGISTER_F(MapPerformanceTest,ThreadSafeMapRemoveBenchmark)->Apply(MapParametersMultithreaded)->UseRealTime();

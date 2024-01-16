@@ -4,9 +4,9 @@
 
 ## System dependencies
 
-* Ubuntu 14.04 or above
+* Ubuntu 18.04 or above
 * Cmake 3.5.1 or above
-* gcc for C++11 5.4.0 or above.
+* gcc for C++11 5.4.0 or above
 
 ## Installation
 
@@ -23,6 +23,7 @@ cmake ..
 make
 sudo make install
 ```
+
 ## Run benchmarks
 
 Benchmarks can be run by the following command:
@@ -38,9 +39,9 @@ Each benchmark measures the cpu impact of *put*, *get* and *erase* method implem
 
 ## Method definition
 The measured methods are defined as follows:
-    * put: the insertion of an element inside a collection.
-    * get: the access to an element in a collection.
-    * erase: the deletion of an element in a collection.
+* put: the insertion of an element inside a collection.
+* get: the access to an element in a collection.
+* erase: the deletion of an element in a collection.
 
 ## Method correspondence for each class
 ### std::map
@@ -114,7 +115,7 @@ To better observe the benefits of using *LockFreeHashTable* an extensive benchma
 |  7 | std::string, int | SortedMap       | Remove      |        30 | 4.11676e+07 |           18 |
 |  8 | std::string, int | SortedMap       | Remove      |        40 | 4.04318e+07 |           17 |
 |  9 | std::string, int | SortedMap       | Remove      |        50 | 4.12092e+07 |           17 |
-| 10 | std::string, int | UnorderedMap    | Remove      |        10 | 1.5592e+07  |           45 |
+| 10 | std::string, int | UnorderedMap    | Remove      |        10 |  1.5592e+07 |           45 |
 | 11 | std::string, int | UnorderedMap    | Remove      |        20 | 1.78234e+07 |           41 |
 | 12 | std::string, int | UnorderedMap    | Remove      |        30 | 1.69932e+07 |           43 |
 | 13 | std::string, int | UnorderedMap    | Remove      |        40 | 1.77668e+07 |           39 |
