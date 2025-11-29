@@ -7,3 +7,4 @@ project(${PROJ_MAIN_NAME})
 
 add_subdirectory(tests)
 add_subdirectory(benchmarks)
+add_subdirectory(example)

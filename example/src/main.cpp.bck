@@ -1,0 +1,64 @@
+#include <tvm/runtime/module.h>
+//#include <tvm/runtime/registry.h>
+#include <tvm/ffi/reflection/registry.h>
+#include <tvm/runtime/packed_func.h>
+
+#include <fstream>
+#include <iterator>
+#include <algorithm>
+
+int main()
+{
+    tvm::ffi::Module mod_syslib = tvm::ffi::Module::LoadFromFile("model.so");
+    std::ifstream json_in("model.json", std::ios::in);
+    std::string json_data((std::istreambuf_iterator<char>(json_in)), std::istreambuf_iterator<char>());
+    json_in.close();
+
+    std::ifstream params_in("model.params", std::ios::binary);
+    std::string params_data((std::istreambuf_iterator<char>(params_in)), std::istreambuf_iterator<char>());
+    params_in.close();
+
+    TVMByteArray params_arr;
+    params_arr.data = params_data.c_str();
+    params_arr.size = params_data.length();
+
+    int dtype_code = kDLFloat;
+    int dtype_bits = 32;
+    int dtype_lanes = 1;
+    int device_type = kDLCPU;
+    int device_id = 0;
+
+    tvm::runtime::Module mod = (*tvm::runtime::Registry::Get("tvm.graph_runtime.create"))(json_data, mod_syslib, device_type, device_id);
+
+    DLTensor* x;
+    int in_ndim = 4;
+    int64_t in_shape[4] = {1, 100, 128, 3};
+    TVMArrayAlloc(in_shape, in_ndim, dtype_code, dtype_bits, dtype_lanes, device_type, device_id, &x);
+    
+    int input_byte_size = 1*100*128*3*sizeof(float);
+    std::vector<float> input_data(100*128*3); // this is random input you can change to your input
+
+    TVMArrayCopyFromBytes(x, input_data.data(), input_byte_size);
+
+    tvm::runtime::PackedFunc set_input = mod.GetFunction("set_input");
+    set_input("data", x);
+
+    tvm::runtime::PackedFunc load_params = mod.GetFunction("load_params");
+    load_params(params_arr);
+
+    tvm::runtime::PackedFunc run = mod.GetFunction("run");
+    run();
+
+    DLTensor* y;
+    int out_ndim = 3;
+    int64_t out_shape[3] = {1, 100, 6};
+    TVMArrayAlloc(out_shape, out_ndim, dtype_code, dtype_bits, dtype_lanes, device_type, device_id, &y);
+
+    tvm::runtime::PackedFunc get_output = mod.GetFunction("get_output");
+    get_output(0, y); // after this you may use y.CopyToBytes() to get an output to any array vector or Mat you want
+
+    TVMArrayFree(x);
+    TVMArrayFree(y);
+
+    return 0;
+}

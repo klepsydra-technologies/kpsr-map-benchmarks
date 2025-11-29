@@ -6,6 +6,7 @@
 #include <thread>
 #include <atomic>
 #include <chrono>
+#include <stdexcept>
 #define MAP_SIZE 8192
 void MapParameters(benchmark::internal::Benchmark* benchmark);
 void MapParametersMultithreaded(benchmark::internal::Benchmark* benchmark);
