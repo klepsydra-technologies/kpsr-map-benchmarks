@@ -17,9 +17,12 @@ struct CPUNDAlloc
   void FreeData(DLTensor *tensor) { free(tensor->data); }
 };
 
-int main()
+int main(int argc, char** argv)
 {
-  std::string path = "./compiled_artifact.so";
+  if (argc < 2) {
+    return -1;
+  }
+  std::string path = argv[1];
 
   // Load the shared object
   tvm::ffi::Module m = tvm::ffi::Module::LoadFromFile(path);
@@ -50,15 +53,28 @@ int main()
   std::cout << "Found main()" << std::endl;
 
   // Create and initialize the input array
-  tvm::ffi::Tensor input = tvm::ffi::Tensor::FromNDAlloc(CPUNDAlloc(), {3, 3}, {kDLInt, 32, 1}, device);
+  tvm::ffi::Tensor input = tvm::ffi::Tensor::FromNDAlloc(CPUNDAlloc(), {1, 3, 224, 224}, {kDLFloat, 32, 1}, device);
   int numel = input.shape().Product();
   for (int i = 0; i < numel; ++i)
     static_cast<int *>(input.data_ptr())[i] = i;
   std::cout << "Input array initialized" << std::endl;
 
   // Run the main function
-  tvm::ffi::Tensor output = (*main)(input).cast<tvm::ffi::Tensor>();
-  std::cout << "output: " << std::endl;
-  for (int i = 0; i < numel; ++i)
-    std::cout << "  " << static_cast<int *>(output.data_ptr())[i] << std::endl;
+  double elapsed_time = 0;
+  size_t iterations = 10;
+  for (size_t i = 0; i < iterations; i++) {
+    auto start_ms = std::chrono::high_resolution_clock::now();
+    tvm::ffi::Tensor output = (*main)(input).cast<tvm::ffi::Tensor>();
+    auto end_ms = std::chrono::high_resolution_clock::now();
+    elapsed_time +=
+        std::chrono::duration_cast<std::chrono::milliseconds>(end_ms - start_ms).count();
+    if (i == 0) {
+      std::cout << "output: " << std::endl;
+      for (int i = 0; i < numel; ++i)
+        std::cout << "  " << static_cast<float *>(output.data_ptr())[i] << std::endl;
+    }
+  
+    }
+  elapsed_time /= iterations;
+  std::cout << "  elapsed time " << elapsed_time << " ms" << std::endl;
 }
