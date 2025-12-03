@@ -7,6 +7,7 @@
 #include <tvm/ffi/container/tensor.h>
 #include <tvm/ffi/container/shape.h>
 #include <tvm/runtime/vm/vm.h>
+#include <tvm/runtime/threading_backend.h>
 
 struct CPUNDAlloc
 {
@@ -59,6 +60,8 @@ int main(int argc, char** argv)
     static_cast<int *>(input.data_ptr())[i] = i;
   std::cout << "Input array initialized" << std::endl;
 
+  std::cout << "Num Threads used: " << 
+  tvm::runtime::threading::NumThreads() << std::endl;
   // Run the main function
   double elapsed_time = 0;
   size_t iterations = 10;
